@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -20,6 +23,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import java.util.Arrays;
 
 public class PrivateDnsConfigActivity extends Activity {
 
@@ -42,6 +47,25 @@ public class PrivateDnsConfigActivity extends Activity {
         if ((!hasPermission()) || togglestates.getBoolean("first_run", true) ){
             HelpMenu();
             editor.putBoolean("first_run", false).commit();
+        }
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            String action = intent.getAction();
+            if (ACTION_ENABLE_DNS.equals(action)) {
+                // Handle enable DNS action
+                checkoff.setChecked(false);
+                checkauto.setChecked(false);
+                checkon.setChecked(true);
+            } else if (ACTION_DISABLE_DNS.equals(action)) {
+                // Handle disable DNS action
+                checkoff.setChecked(true);
+                checkauto.setChecked(false);
+                checkon.setChecked(false);
+            } else if (ACTION_TOGGLE_DNS.equals(action)) {
+                // Handle toggle DNS action
+            }
+            setIntent(null);
         }
 
         if (togglestates.getBoolean("toggle_off", true)) {
@@ -122,6 +146,40 @@ public class PrivateDnsConfigActivity extends Activity {
             }
         });
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+            updateShortcuts();
+        }
+    }
+
+    private static final String ACTION_ENABLE_DNS = "com.jpwolfso.privdnsqt.ACTION_ENABLE_DNS";
+    private static final String ACTION_DISABLE_DNS = "com.jpwolfso.privdnsqt.ACTION_DISABLE_DNS";
+    private static final String ACTION_TOGGLE_DNS = "com.jpwolfso.privdnsqt.ACTION_TOGGLE_DNS";
+
+    private void updateShortcuts() {
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+        ShortcutInfo enableDnsShortcut = new ShortcutInfo.Builder(this, "enable_dns")
+                .setShortLabel("Enable DNS")
+                .setLongLabel("Enable DNS")
+                .setIcon(Icon.createWithResource(this, R.drawable.ic_dnson))
+                .setIntent(new Intent(ACTION_ENABLE_DNS).setPackage(getPackageName()))
+                .build();
+
+        ShortcutInfo disableDnsShortcut = new ShortcutInfo.Builder(this, "disable_dns")
+                .setShortLabel("Disable DNS")
+                .setLongLabel("Disable DNS")
+                .setIcon(Icon.createWithResource(this, R.drawable.ic_dnsoff))
+                .setIntent(new Intent(ACTION_DISABLE_DNS).setPackage(getPackageName()))
+                .build();
+
+        ShortcutInfo toggleDnsShortcut = new ShortcutInfo.Builder(this, "toggle_dns")
+                .setShortLabel("Toggle DNS")
+                .setLongLabel("Toggle DNS")
+                .setIcon(Icon.createWithResource(this, R.drawable.ic_dnsauto))
+                .setIntent(new Intent(ACTION_TOGGLE_DNS).setPackage(getPackageName()))
+                .build();
+
+        shortcutManager.setDynamicShortcuts(Arrays.asList(enableDnsShortcut, disableDnsShortcut, toggleDnsShortcut));
     }
 
     public boolean hasPermission() {
