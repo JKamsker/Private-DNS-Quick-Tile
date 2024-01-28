@@ -1,7 +1,10 @@
 name: Build APK
 
+# on: push any branch
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - '*'
 
 jobs:
   build:
