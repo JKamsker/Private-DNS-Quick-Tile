@@ -58,7 +58,7 @@ public class PrivateDnsConfigActivity extends Activity {
                 checkoff.setChecked(false);
                 checkauto.setChecked(false);
                 checkon.setChecked(true);
-                Settings.Global.putString(getContentResolver(), "hostname", dnsprovider);
+                Settings.Global.putString(getContentResolver(), "hostname", "hostname");
                 handled = true;
                 // String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
                 // if (dnsprovider != null) {
@@ -75,25 +75,38 @@ public class PrivateDnsConfigActivity extends Activity {
             } else if (ACTION_TOGGLE_DNS.equals(action)) {
                 // Handle toggle DNS action
                 String dnsmode = Settings.Global.getString(getContentResolver(), "private_dns_mode");
-                if (dnsmode.equalsIgnoreCase("off")) {
+                Boolean isOn = !dnsmode.equalsIgnoreCase("off");
+                if (isOn) {
                     checkoff.setChecked(false);
                     checkauto.setChecked(false);
                     checkon.setChecked(true);
                     Settings.Global.putString(getContentResolver(), "private_dns_mode", "hostname");
-                    handled = true;
-                } else if (dnsmode.equalsIgnoreCase("hostname")) {
-                    checkoff.setChecked(false);
-                    checkauto.setChecked(true);
-                    checkon.setChecked(false);
-                    Settings.Global.putString(getContentResolver(), "private_dns_mode", "opportunistic");
-                    handled = true;
-                } else if (dnsmode.equalsIgnoreCase("opportunistic")) {
+                } else {
                     checkoff.setChecked(true);
                     checkauto.setChecked(false);
                     checkon.setChecked(false);
                     Settings.Global.putString(getContentResolver(), "private_dns_mode", "off");
-                    handled = true;
                 }
+
+                // if (dnsmode.equalsIgnoreCase("off")) {
+                //     checkoff.setChecked(false);
+                //     checkauto.setChecked(false);
+                //     checkon.setChecked(true);
+                //     Settings.Global.putString(getContentResolver(), "private_dns_mode", "hostname");
+                //     handled = true;
+                // } else if (dnsmode.equalsIgnoreCase("hostname")) {
+                //     checkoff.setChecked(false);
+                //     checkauto.setChecked(true);
+                //     checkon.setChecked(false);
+                //     Settings.Global.putString(getContentResolver(), "private_dns_mode", "opportunistic");
+                //     handled = true;
+                // } else if (dnsmode.equalsIgnoreCase("opportunistic")) {
+                //     checkoff.setChecked(true);
+                //     checkauto.setChecked(false);
+                //     checkon.setChecked(false);
+                //     Settings.Global.putString(getContentResolver(), "private_dns_mode", "off");
+                //     handled = true;
+                // }
             }
             setIntent(null);
         }
