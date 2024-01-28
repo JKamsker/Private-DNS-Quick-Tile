@@ -49,6 +49,7 @@ public class PrivateDnsConfigActivity extends Activity {
             editor.putBoolean("first_run", false).commit();
         }
 
+        Boolean handled = false;
         Intent intent = getIntent();
         if (intent != null) {
             String action = intent.getAction();
@@ -57,32 +58,41 @@ public class PrivateDnsConfigActivity extends Activity {
                 checkoff.setChecked(false);
                 checkauto.setChecked(false);
                 checkon.setChecked(true);
+                handled = true;
+                // String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
+                // if (dnsprovider != null) {
+                //     texthostname.setText(dnsprovider);
+                //     Settings.Global.putString(getContentResolver(), "private_dns_mode", dnsprovider);
+                // }
             } else if (ACTION_DISABLE_DNS.equals(action)) {
                 // Handle disable DNS action
                 checkoff.setChecked(true);
                 checkauto.setChecked(false);
                 checkon.setChecked(false);
+                handled = true;
             } else if (ACTION_TOGGLE_DNS.equals(action)) {
                 // Handle toggle DNS action
             }
             setIntent(null);
         }
 
-        if (togglestates.getBoolean("toggle_off", true)) {
-            checkoff.setChecked(true);
-        }
+        if (!handled) {
+            if (togglestates.getBoolean("toggle_off", true)) {
+                checkoff.setChecked(true);
+            }
 
-        if (togglestates.getBoolean("toggle_auto", true)) {
-            checkauto.setChecked(true);
-        }
+            if (togglestates.getBoolean("toggle_auto", true)) {
+                checkauto.setChecked(true);
+            }
 
-        if (togglestates.getBoolean("toggle_on", true)) {
-            checkon.setChecked(true);
-            texthostname.setEnabled(true);
-        } else {
-            texthostname.setEnabled(false);
-
+            if (togglestates.getBoolean("toggle_on", true)) {
+                checkon.setChecked(true);
+                texthostname.setEnabled(true);
+            } else {
+                texthostname.setEnabled(false);
+            }
         }
+       
 
         String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
         if (dnsprovider != null) {
