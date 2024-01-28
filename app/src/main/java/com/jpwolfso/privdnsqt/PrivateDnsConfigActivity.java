@@ -58,6 +58,7 @@ public class PrivateDnsConfigActivity extends Activity {
                 checkoff.setChecked(false);
                 checkauto.setChecked(false);
                 checkon.setChecked(true);
+                Settings.Global.putString(getContentResolver(), "hostname", dnsprovider);
                 handled = true;
                 // String dnsprovider = Settings.Global.getString(getContentResolver(), "private_dns_specifier");
                 // if (dnsprovider != null) {
@@ -69,9 +70,30 @@ public class PrivateDnsConfigActivity extends Activity {
                 checkoff.setChecked(true);
                 checkauto.setChecked(false);
                 checkon.setChecked(false);
+                Settings.Global.putString(getContentResolver(), "private_dns_mode", "off");
                 handled = true;
             } else if (ACTION_TOGGLE_DNS.equals(action)) {
                 // Handle toggle DNS action
+                String dnsmode = Settings.Global.getString(getContentResolver(), "private_dns_mode");
+                if (dnsmode.equalsIgnoreCase("off")) {
+                    checkoff.setChecked(false);
+                    checkauto.setChecked(false);
+                    checkon.setChecked(true);
+                    Settings.Global.putString(getContentResolver(), "private_dns_mode", "hostname");
+                    handled = true;
+                } else if (dnsmode.equalsIgnoreCase("hostname")) {
+                    checkoff.setChecked(false);
+                    checkauto.setChecked(true);
+                    checkon.setChecked(false);
+                    Settings.Global.putString(getContentResolver(), "private_dns_mode", "opportunistic");
+                    handled = true;
+                } else if (dnsmode.equalsIgnoreCase("opportunistic")) {
+                    checkoff.setChecked(true);
+                    checkauto.setChecked(false);
+                    checkon.setChecked(false);
+                    Settings.Global.putString(getContentResolver(), "private_dns_mode", "off");
+                    handled = true;
+                }
             }
             setIntent(null);
         }
